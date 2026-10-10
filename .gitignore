@@ -1,1 +1,27 @@
-.venv/*
+#Jupyter 
+.ipynb_checkpoints
+
+#Python
+__pycache__/
+*.pyc
+
+#Virtual Environments
+venv/
+.env/
+
+#OS
+.DS_Store
+Thumbs.db
+
+#VSCode
+.vscode/
+
+#Temporary files
+*.log
+
+#Models 
+*.pk1
+*.joblib
+
+#Large files
+*.zip
