@@ -80,10 +80,34 @@ The dataset is prepared for:
 
 If you want, I can also make it more polished for GitHub with a short project title and badges.
 
-# task 3: Feature Engineering and feature selection
+## Task 3: Feature Engineering and Feature Selection
 
-## Objective
+### Objective
+Enhance the raw telemetry data with features that capture operational pressure, remaining capacity, and demand intensity while avoiding target leakage.
 
-Infrastructure metrics often become more useful when they are transformed into features that capture operatinal behaviour and 
-system pressure 
+### Activities
+- Capacity headroom:
+  - `current_capacity_rpm - requests_per_min`
+  - Lower values indicate higher infrastructure pressure
+- Demand intensity:
+  - `requests_per_min / active_users`
+- Utilization pressure:
+  - `(cpu_utilization + memory_utilization + disk_utilization) / 3`
+- Resource efficiency:
+  - `requests_per_min / cpu_utilization`
+- Feature validation:
+  - Compare engineered features against `scale_up_required`
+  - Review boxplots and feature separation
+- Correlation analysis:
+  - Assess relationships with `next_15min_requests`
+  - Assess relationships with `scale_up_required`
+- Dataset separation:
+  - Regression features: `X_reg`
+  - Classification features: `X_cls`
 
+### Key findings
+- Capacity headroom showed strong separation between scale-up and non-scale-up states.
+- Utilization pressure and requests per CPU are useful indicators of operational stress.
+- Current request volume, active user count, and order volume show strong positive relationships with future demand.
+- Scale-up requirements are positively correlated with utilization pressure and negatively correlated with capacity headroom.
+- Demand intensity was retained for evaluation but was not the strongest signal by itself.
