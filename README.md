@@ -176,8 +176,97 @@ For NimbusCart, the Random Forest classifier is the recommended model for proact
 - Confusion matrix for Decision Tree: `outputs/tasks5/Confusion_matrix_DT.png`
 - Confusion matrix for Random Forest: `outputs/tasks5/Confusion_matrix_RF.png`
 
+## Task 6: Discover Traffic and Infrastructure States
+
+### Objective
+Identify natural operating states in the platform without using a target label, so the team can understand recurring infrastructure patterns and distinguish normal traffic from pre-scale or rare stress conditions.
+
+### Activities
+- Applied unsupervised clustering to workload and infrastructure features
+- Compared clustering approaches:
+  - K-Means
+  - Hierarchical clustering
+  - DBSCAN
+- Evaluated cluster quality using silhouette analysis and operational interpretation
+- Translated cluster patterns into actionable operational states for SRE and capacity planning teams
+
+### Key findings
+- K-Means produced the clearest and most actionable operating-state structure.
+- The selected clustering model identified three primary states:
+  - Low Traffic Steady State
+  - Moderate Pressure Zone
+  - High Traffic / Pre-Scale State
+- Cluster 0 represented low-demand, stable platform conditions.
+- Cluster 2 captured moderate demand with some operating stress but no immediate scaling emergency.
+- Cluster 1 represented the most critical state: elevated workload, constrained headroom, and conditions that precede or coincide with scale-up decisions.
+- Hierarchical clustering also revealed meaningful structure, but it was less practical for live operational categorization than K-Means.
+- DBSCAN identified a dominant normal state plus several unusual observations, confirming that not all rare conditions should be treated as noise.
+
+### Recommended approach
+K-Means was chosen as the preferred clustering method because it offers a simple, interpretable, and operationally useful grouping of the telemetry data. It is especially suitable for classifying the platform into stable, moderate, and high-pressure operating states during day-to-day monitoring.
+
+### Business value
+This task helps NimbusCart move from reactive monitoring to state-aware operations management. By identifying when the platform is in a low-risk, moderate-risk, or pre-scale condition, SRE teams can better prioritize alerts, plan maintenance windows, and allocate capacity before demand spikes create customer-facing performance issues.
+
+## Task 7: Reduce Dimensions and Visualize Results
+
+### Objective
+Reduce the high-dimensional infrastructure feature space into a two-dimensional representation and visualize the operational clusters so the structure of the data is easier to interpret.
+
+### Activities
+- Applied Principal Component Analysis (PCA) to the clustering feature set
+- Reduced the data to a two-dimensional projection
+- Plotted the K-Means clusters in PCA space
+- Assessed whether low-demand and high-pressure operating states separated cleanly in the reduced feature space
+
+### Key findings
+- The first two principal components retained approximately 92.96% of the total variance.
+- This indicates that the core operating behavior of the infrastructure can be represented effectively in a two-dimensional space.
+- The PCA projection showed clear separation between the discovered clusters.
+- Low-demand and high-pressure operating states occupied different regions of the PCA space, supporting the validity of the clustering solution.
+- The reduced visualization makes it easier to interpret cluster boundaries and communicate infrastructure states to operations teams.
+
+### Business value
+PCA creates an intuitive, visual summary of the platform’s behavior. This helps SRE teams understand how different operating states differ and supports faster communication of cluster meaning during reviews, dashboards, and incident discussions.
+
+## Task 8: Proactive Capacity Recommendation
+
+### Objective
+Translate the forecasting, classification, and clustering results into a practical operational recommendation for NimbusCart’s SRE and platform teams.
+
+### Key recommendations
+- Use the Random Forest classifier as the preferred production model for proactive scale-up decisions because it provides stronger recall and a better balance between reliability and cost.
+- Treat the regression model as an early-warning demand forecast for the next 15 minutes to support capacity planning and lead-time decisions.
+- Use the clustering outputs as contextual indicators of the current operating state, alongside model predictions, to understand whether the environment is stable, moderately stressed, or near a scale-up threshold.
+- Prioritize attention during sale and flash sale windows, when the largest traffic spikes and the greatest prediction uncertainty were observed.
+
+### Monitoring recommendation
+- Increase monitoring intensity during promotional events and high-demand periods.
+- Review workload, CPU, memory, network, and capacity-headroom metrics together rather than relying on a single signal.
+- Monitor model drift and changing demand patterns over time, since infrastructure behavior may evolve with new product launches or seasonal campaigns.
+
+### Alerting recommendations
+Alerts should combine multiple signals instead of triggering on a single metric alone:
+- Forecasted request volume above expected thresholds
+- Scale-up prediction probability crossing a decision threshold
+- Low capacity headroom or rising utilization pressure
+- Cluster membership indicating a high-traffic or pre-scale state
+
+This layered alerting strategy reduces false alarms while improving early detection of risky operating conditions.
+
+### Operational guidance
+- Missing a required scale-up creates greater availability risk than performing an unnecessary scale-up; therefore, the classifier should favor recall when operational decisions are uncertain.
+- Predictions should support human decision-making rather than replace it.
+- SRE judgment remains essential for final scale actions, especially during unusual promotions, outages, or operational incidents.
+
+### Final outcome
+Overall, the models provide useful early-warning signals for proactive capacity planning, but real-time telemetry and operational context should remain part of the final scaling decision. The combined approach gives NimbusCart a practical framework for anticipating demand surges, identifying operational states, and improving infrastructure resilience.
+
 ## Summary
 This analysis shows that the system can support both forecasting and proactive actioning:
 - The regression model estimates future request volume from current conditions.
 - The classification model decides when scaling should be triggered before service degradation occurs.
+- The clustering model identifies the platform’s recurring operational states and reveals when the infrastructure is nearing a scale-up threshold.
+- The dimensionality reduction step makes those states easier to interpret and explain visually.
+- The final capacity recommendation translates these findings into practical SRE actions and monitoring policies.
 - Together, these outputs provide a practical basis for infrastructure planning, risk reduction, and operational decision support during high-demand periods.
