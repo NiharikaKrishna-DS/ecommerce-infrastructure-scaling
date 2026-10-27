@@ -1,6 +1,6 @@
-
-
-# Ecommerce Infrastructure Scaling Analysis
+Name: Niharika N K 
+Project : # Ecommerce Infrastructure Scaling Analysis
+Batch Code : 302602 ( Skillfyme )
 
 This project analyzes ecommerce infrastructure telemetry to understand demand changes, evaluate machine learning readiness, and support proactive scaling decisions during sales events.
 
